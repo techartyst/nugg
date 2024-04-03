@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+color: #666;
+}
+body{
+  background-color: aliceblue;
+
+}
+.rand{
+  background-color: #FFFDe7;
+  padding:30px ;
+  margin: 1em;
+  vertical-align: middle;
+  font-size: 1.1em;
+  word-wrap: break-word
+  line-height: 1.5;
+}
+
+.menu{
+  padding:4px;
+}
+.add{
+  background-color: #fff;
+  padding:30px ;
+  margin: 1em;
+  vertical-align: middle;
+  font-size: 1.1em;
+  word-wrap: break-word
+}
+
+.light{
+  font-size: 0.7em;
+  padding: 3px;
+}
+
+.custom-button{  background-color: #f00; /* Example background color */
+}
+
+a{
+  color:blue;
+  text-decoration:none;
+}
+
+a:hover{
+  color:#999;
+}

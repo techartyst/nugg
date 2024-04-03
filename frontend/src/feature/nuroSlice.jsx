@@ -1,0 +1,140 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+const nuroState = {
+  updateState: false,
+  loading: false,
+  nuggetList: [],
+  error: "",
+  response: "",
+};
+
+export const fetchNugget = createAsyncThunk(
+  "nugget/fetchNugget",
+  async () => {
+    const response = await axios.get("http://localhost:8000/api/items");
+    return response.data.response;
+  }
+);
+
+export const fetchRandomNugget = createAsyncThunk(
+  "nugget/fetchRandomNugget",
+  async () => {
+    const response = await axios.get("http://localhost:8000/api/items/random");
+    return response.data.response;
+  }
+);
+
+export const addNugget = createAsyncThunk(
+  "nugget/addNugget",
+  async (data) => {
+    const response = await axios.post("http://localhost:8000/api/items", {
+      name: data.name,
+      position: data.position,
+    });
+    return response.data.response;
+  }
+);
+
+export const getTopic = createAsyncThunk(
+  'nugget/getTopic',
+  async (value) => {
+    try {
+      // Send a GET request to your API endpoint with the input value
+      const response = await axios.get(`http://localhost:8000/api/items?name=${value}`);
+      // Extract and return the response data
+      return response.data;
+    } catch (error) {
+      // Handle errors if any
+      console.error('Error fetching topics:', error);
+      throw error; // Rethrow the error to be handled by the caller
+    }
+  }
+);
+
+export const removeNugget = createAsyncThunk(
+  "nugget/removeNugget",
+  async (data) => {
+    const response = await axios.delete(
+      `http://localhost:8000/api/items/${data}`
+    );
+    return response.data.response;
+  }
+);
+
+export const modifiedNugget = createAsyncThunk(
+  "nugget/modifiedNugget",
+  async (data) => {
+    const response = await axios.put(
+      `http://localhost:8000/api/items/${data.id}`,
+      {
+        name: data.name,
+        position: data.position,
+      }
+    );
+    return response.data.response;
+  }
+);
+
+const nuggetSlice = createSlice({
+  name: "nugget",
+  initialState: nuroState,
+  reducers: {
+    changeStateTrue: (state) => {
+      state.updateState = true;
+    },
+    changeStateFalse: (state) => {
+      state.updateState = false;
+    },
+    clearResponse: (state) => {
+      state.response = "";
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(addNugget.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addNugget.fulfilled, (state, action) => {
+        state.loading = false;
+        state.nuggetList.push(action.payload);
+        state.response = "add";
+      })
+      .addCase(addNugget.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+
+    builder
+      .addCase(fetchNugget.fulfilled, (state, action) => {
+        state.nuggetList = action.payload;
+      })
+      .addCase(fetchNugget.rejected, (state, action) => {
+        state.error = action.error.message;
+      });
+
+    builder.addCase(removeNugget.fulfilled, (state, action) => {
+      state.nuggetList = state.nuggetList.filter(
+        (item) => item._id != action.payload
+      );
+      state.response = "delete";
+    });
+
+    builder.addCase(modifiedNugget.fulfilled, (state, action) => {
+      const updateItem = action.payload;
+      console.log(updateItem);
+      const index = state.nuggetList.findIndex(
+        (item) => item._id === updateItem._id
+      );
+      if (index !== -1) {
+        state.nuggetList[index] = updateItem;
+      }
+      state.response = "update";
+    });
+  },
+});
+
+
+export default nuggetSlice.reducer;
+export const { changeStateTrue, changeStateFalse, clearResponse } =
+  nuggetSlice.actions;

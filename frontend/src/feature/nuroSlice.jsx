@@ -9,6 +9,33 @@ const nuroState = {
   response: "",
 };
 
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async ({ username, password,fullname }) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/register", { username, password, fullname });
+      return response.data.response;
+    } catch (error) {
+      console.error("Error occurred:", error);
+      return error.response.data;
+    }
+  }
+);
+
+
+export const loginUser = createAsyncThunk(
+  'auth/login',
+  async ({ username, password }) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/login", { username, password });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  }
+);
+
+
 export const fetchNugget = createAsyncThunk(
   "nugget/fetchNugget",
   async () => {
@@ -122,7 +149,6 @@ const nuggetSlice = createSlice({
 
     builder.addCase(modifiedNugget.fulfilled, (state, action) => {
       const updateItem = action.payload;
-      console.log(updateItem);
       const index = state.nuggetList.findIndex(
         (item) => item._id === updateItem._id
       );
@@ -133,6 +159,8 @@ const nuggetSlice = createSlice({
     });
   },
 });
+
+
 
 
 export default nuggetSlice.reducer;

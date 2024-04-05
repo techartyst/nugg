@@ -1,11 +1,11 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-color: #666;
+  font-family: 'DM Sans', sans-serif;
+  color: #666;
 }
 body{
-  background-color: aliceblue;
+  background-color:#F8FEFF;
 
 }
 .rand{
@@ -45,4 +45,71 @@ a{
 
 a:hover{
   color:#999;
+}
+/* login */
+
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.login-box {
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: none;
+  border: 1px solid #cccccc;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.textbox {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #1F1D1B;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #666;
+}
+
+.register-message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555555;
+}
+
+.forgot-password {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555555;;
+  text-decoration: none;
 }

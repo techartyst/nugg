@@ -1,10 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Secret key for JWT signing (should be kept secret and not hard-coded)
+const secretKey = 'UAE!f0und19-47@';
+
 
 const connectDB = async () => {
   try {
@@ -31,6 +39,18 @@ const ItemSchema = new mongoose.Schema({
   },
 });
 const Item = mongoose.model("Item", ItemSchema);
+
+
+// Defining user schema
+const userSchema = new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  fullname: { type: String, required: true },
+
+});
+
+const User = mongoose.model('User', userSchema);
+
 
 app.get("/api", (req, res) => {
   res.status(200).send({ response: "api worked.." });
@@ -110,3 +130,45 @@ app.delete("/api/items/:id", async (req, res) => {
 app.listen(8000, () => {
   console.log(`Server is running on PORT ${8000}`);
 });
+
+app.post('/api/register', async (req, res) => {
+  const { username, password,fullname } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword,fullname });
+    await user.save();
+    res.json({ message: 'Registration successful' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    // If user not found, return an error
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid username or password' });
+    }
+
+    // Compare the provided password with the hashed password stored in the database
+    const match = await bcrypt.compare(password, user.password);
+
+    // If passwords don't match, return an error
+    if (!match) {
+      return res.status(400).json({ message: 'Invalid username or password' });
+    }
+
+    // If everything is correct, return a success message
+    // Generate JWT token
+    const token = jwt.sign({ id: user.id, username: user.username }, secretKey);
+
+    res.json({ token });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+

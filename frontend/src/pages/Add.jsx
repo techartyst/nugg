@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addNugget,
   fetchNugget,
-  removeNugget,
   modifiedNugget,
   changeStateTrue,
   changeStateFalse,

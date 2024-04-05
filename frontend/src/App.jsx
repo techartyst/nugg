@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from "@mui/material";
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 
 
@@ -10,6 +10,8 @@ import About from "./pages/About";
 import Add from "./pages/Add";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Index from "./pages/index";
+
 import Navbar from "./Navbar";
 
 // Function to check if user is authenticated
@@ -29,19 +31,30 @@ const Protected = ({ element, ...rest }) => {
   );
 };
 
+// Navbar component
+const NavbarWrapper = () => {
+  const location = useLocation();
+
+  // Function to determine if Navbar should be displayed based on current route
+  const showNavbar = () => {
+    const { pathname } = location;
+    return !['/login', '/index' , '/register'].includes(pathname);
+  };
+
+  return showNavbar() ? <Navbar /> : null;
+};
 
 
 const App = () => {
-  return (
+
+ 
+   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-        <Typography variant="h4">
-          nuro
-        </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+        
       </Box>
         <Router>
-        <Navbar />
-
+        <NavbarWrapper />
         <div>
           <Routes>
             <Route path="/" element={<Protected element={<Home />} />} />
@@ -50,6 +63,8 @@ const App = () => {
             <Route path="/about" element={<Protected element={<About />} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/index" element={<Index />} />
+
           </Routes>
         </div>
         </Router>

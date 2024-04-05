@@ -6,8 +6,27 @@
 }
 body{
   background-color:#F8FEFF;
+  padding:15px;
+}
+
+.menu{
+  padding:0px;
 
 }
+
+.logo {
+
+  display: block;
+  margin: 0 auto;
+  font-size: 1.5em;
+  text-align: center;
+  letter-spacing: 4px;
+  padding:5px;
+  color: black;
+
+}
+
+
 .rand{
   background-color: #FFFDe7;
   padding:30px ;
@@ -16,15 +35,30 @@ body{
   font-size: 1.1em;
   word-wrap: break-word;
   line-height: 1.5;
+  border: 1px solid #cccccc;
+ 
+
 }
 
-.menu{
-  padding:4px;
+/* icons */
+.ico {
+  border: none;
+  color: black;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
 }
+
+/* Darker background on mouse-over */
+.ico:hover {
+  background-color:#dbf3fa;
+    color: white;
+
+}
+
 .add{
   background-color: #fff;
-  padding:30px ;
-  margin: 1em;
+  padding:10px ;
   vertical-align: middle;
   font-size: 1.1em;
   word-wrap: break-word
@@ -39,7 +73,7 @@ body{
 }
 
 a{
-  color:blue;
+  color:#333;
   text-decoration:none;
 }
 
@@ -93,7 +127,7 @@ a:hover{
   color: #ffffff;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.1s;
 }
 
 .btn:hover {
@@ -112,4 +146,71 @@ a:hover{
   font-size: 14px;
   color: #555555;;
   text-decoration: none;
+}
+
+
+/* home page */
+
+.indx-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.indx-h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.indx-p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.indx-image-container {
+  margin-bottom: 30px;
+}
+
+.indx-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.indx-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.indx-link:hover {
+  background-color: #0056b3;
+}
+
+.indx-icon-container {
+  margin-top: 30px;
+}
+
+.indx-icon {
+  display: inline-block;
+  margin: 0 20px;
+}
+
+.indx-icon img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.indx-icon p {
+  font-size: 1.1rem;
 }

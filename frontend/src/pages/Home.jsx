@@ -1,49 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { fetchRandomNugget } from '../feature/nuroSlice';
-import { useDispatch, useSelector } from "react-redux";
+
+import { useDispatch } from "react-redux";
 import Button from '@mui/material/Button'; // Import Button component from Material-UI
 
 function App() {
   const dispatch = useDispatch();
-  const [nugget, setTopic] = useState(null);
-
-  const handleClick = (e) => {
-    loadRandomItem();
-   // handleClickSnackbar();    
-  };
+  const [nugget, setNugget] = useState(null);
 
   useEffect(() => {
     loadRandomItem();
-
   }, []);
 
-  function loadRandomItem(){
-    const fetchRandomItem = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/items/random');
-        setTopic(response.data);
+  const loadRandomItem = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/items/random');
+      setNugget(response.data);
+    } catch (error) {
+      console.error('Error fetching random item:', error);
+    }
+  };
 
-      } catch (error) {
-        console.error('Error fetching random item:', error);
+  const renderTextWithLinks = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={index} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+        );
+      } else {
+        return part.split('\n').map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            <br />
+          </React.Fragment>
+        ));
       }
-    };
+    });
+  };
 
-    fetchRandomItem();
-  }
-  
   return (
     <div>
       <h1></h1>
       {nugget ? (
-        <div class="rand">
-          <p>{nugget.position}</p>
+        <div className="rand">
+          {/* Render nugget.position with links and line breaks */}
+          <div>{renderTextWithLinks(nugget.position)}</div>
           <p>&nbsp;</p>
-          <p><Button style={{ backgroundColor: "blue" }} variant="contained" color="primary" onClick={(e) => {
-                handleClick(e);
-              }}>
-                Try another
-            </Button></p>
+          <p>
+            <Button 
+              class='btn'
+              onClick={loadRandomItem}
+            >
+              Try another
+            </Button>
+          </p>
           {/* Display other item details here */}
         </div>
       ) : (

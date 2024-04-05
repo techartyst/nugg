@@ -148,8 +148,7 @@ console.log(newval);
           sx={{
             flex: '1', // Take up remaining vertical space
             border: '0px solid black', // Example border for visualization
-            width: '100vh', // Set width to 95% of the screen
-
+            paddingTop:2
           }}
         >
 
@@ -176,7 +175,7 @@ console.log(newval);
           }}
         >
           <TextField
-            sx={{ color: "white", width: "99%", padding: 1 }}
+            sx={{ color: "white", width: "100%", paddingTop:1}}
 
             variant="outlined"
             size="large"
@@ -193,12 +192,11 @@ console.log(newval);
           sx={{
             flex: '1', // Take up remaining vertical space
             border: '0px solid black', // Example border for visualization
-            padding: 1
-          }}
+            paddingTop:1          }}
         >
           {updateState ? (
             <Button
-              classname="custom-button"
+              classname="btn"
               variant="contained"
               color="primary"
               size="small"
@@ -211,6 +209,7 @@ console.log(newval);
           ) : (
             <Button
               variant="contained"
+              class="btn"
               color="primary"
               size="small"
               onClick={(e) => {

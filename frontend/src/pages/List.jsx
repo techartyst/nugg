@@ -1,3 +1,10 @@
+/**
+ * Home component for displaying and managing nuggets.
+ * This component fetches nuggets from the server and allows users to filter, edit, and delete nuggets.
+ * @module Home
+ * @component
+ */
+
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Table from "@mui/material/Table";
@@ -13,8 +20,13 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useUserIdFromToken } from "../utils/jwtUtils" ; // Import the custom hook
+
 import TextField from "@mui/material/TextField";
 import { useDispatch, useSelector } from "react-redux";
+
+
+
 import {
   fetchNugget,
   removeNugget,
@@ -23,81 +35,109 @@ import {
   changeStateFalse,
 } from "../feature/nuroSlice";
 
+/**
+ * Functional component for rendering the Home page.
+ * @function Home
+ * @returns {JSX.Element} Rendered Home component
+ */
 export default function Home() {
+  // Redux dispatch hook
   const dispatch = useDispatch();
+
+  // Redux selector hook for accessing nugget state
   const { loading, nuggetList, error, updateState, response } = useSelector(
     (state) => state.nuggetKey
   );
+
+  // State variables
   const [editedNugget, setEditedNugget] = useState(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(2);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredNuggets, setFilteredNuggets] = useState([]);
   const [selectedHashtags, setSelectedHashtags] = useState([]);
+  const userId = useUserIdFromToken();
 
+
+  // Fetch nuggets a 
   useEffect(() => {
-    dispatch(fetchNugget());
-  }, [dispatch]);
+    if (userId) {
+      dispatch(fetchNugget(userId)); // Pass userId when dispatching fetchNugget action
+    }
+  }, [userId, dispatch]);
 
+  // Filter nuggets based on search term
   useEffect(() => {
     setFilteredNuggets(
       nuggetList.filter((nugget) =>
-        nugget.position.toLowerCase().includes(searchTerm.toLowerCase())
+        nugget.content.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
     setPage(1); // Reset page when filtering
   }, [nuggetList, searchTerm]);
 
+  // Filter nuggets based on selected hashtags
   useEffect(() => {
     if (selectedHashtags.length > 0) {
       setFilteredNuggets(
         nuggetList.filter((nugget) =>
-          selectedHashtags.includes(nugget.name)
+          selectedHashtags.includes(nugget.topic)
         )
       );
     } else {
       setFilteredNuggets(
         nuggetList.filter((nugget) =>
-          nugget.position.toLowerCase().includes(searchTerm.toLowerCase())
+          nugget.content.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
     setPage(1); // Reset page when filtering
   }, [selectedHashtags, nuggetList, searchTerm]);
 
+  // Update edited nugget
   const updateNugget = (item) => {
     setEditedNugget(item);
     dispatch(changeStateTrue());
+    console.log(item);
   };
 
+  // Save edited nugget
   const saveNugget = () => {
+    console.log(editedNugget);
+
     dispatch(
       modifiedNugget({
         id: editedNugget._id,
-        name: editedNugget.name,
-        position: editedNugget.position,
+        name: editedNugget.topic,
+        position: editedNugget.content,
       })
+      
     );
     dispatch(changeStateFalse());
     setEditedNugget(null);
     handleClickSnackbar();
   };
 
+  // Delete nugget
   const deleteNuggetItem = (id) => {
     dispatch(removeNugget(id));
     handleClickSnackbar();
   };
 
+  // State variables for Snackbar
   const [open, setOpen] = useState(false);
 
+  // Open Snackbar
   const handleClickSnackbar = () => {
     setOpen(true);
   };
 
+  // Close Snackbar
   const handleClose = () => {
     setOpen(false);
   };
 
+  // Handle click on hashtag
   const handleHashtagClick = (name) => {
     if (selectedHashtags.includes(name)) {
       setSelectedHashtags(selectedHashtags.filter(tag => tag !== name));
@@ -106,8 +146,8 @@ export default function Home() {
     }
   };
 
-  // Filter out duplicate names
-  const uniqueNames = [...new Set(nuggetList.map(nugget => nugget.name))];
+  // Filter out duplicate names for hashtags
+  const uniqueNames = [...new Set(nuggetList.map(nugget => nugget.topic))];
 
   // Calculate total number of pages
   const totalPages = Math.ceil(filteredNuggets.length / rowsPerPage);
@@ -117,7 +157,7 @@ export default function Home() {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredNuggets.slice(indexOfFirstRow, indexOfLastRow);
 
-  // Generate page numbers for pagination with ellipsis
+  // Generate page numbers for pagination
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5; // Maximum number of pages to show in pagination
@@ -157,13 +197,15 @@ export default function Home() {
 
   // Filtered nuggets based on selected hashtags
   const filteredNuggetsByHashtags = selectedHashtags.length > 0
-    ? filteredNuggets.filter(nugget => selectedHashtags.includes(nugget.name))
+    ? filteredNuggets.filter(nugget => selectedHashtags.includes(nugget.topic))
     : currentRows;
 
+  // Render List in table via grid component
   return (
-    <Box sx={{ mt: 5 }}>
-      <Grid container justifyContent="center" spacing={2}>
-        <Grid item xs={12} md={8}>
+    <div class="content">
+    <div>
+      <Box sx={{ mt: 5 }}>
+        <div class="full-width">
           <TextField
             label="Search"
             variant="outlined"
@@ -172,12 +214,13 @@ export default function Home() {
             onChange={(e) => setSearchTerm(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
-          <Box sx={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+        </div>
+        <div class="full-width">
+          <Box                 class="hash" sx={{ overflowX: "auto", whiteSpace: "nowrap" }}>
             {uniqueNames.map((name) => (
               <Button
                 key={name}
                 variant={selectedHashtags.includes(name) ? "contained" : "outlined"}
-                color="primary"
                 onClick={() => handleHashtagClick(name)}
                 sx={{ margin: 1, backgroundColor: selectedHashtags.includes(name) ? "lightgray" : "transparent" }}
               >
@@ -185,12 +228,14 @@ export default function Home() {
               </Button>
             ))}
           </Box>
+        </div>
+        <div class="full-width">
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 659 }} aria-label="simple table">
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#4b4d5c" }}>
                   <TableCell align="left">
-                    <Typography sx={{ fontWeight: 600, color: "white" }}>
+                    <Typography sx={{ fontWeight: 600, color: "#fdfdf7" }}>
                       Nugget
                     </Typography>
                   </TableCell>
@@ -211,32 +256,32 @@ export default function Home() {
                   </TableRow>
                 ) : (
                   filteredNuggetsByHashtags.map((item, index) => (
-                    <TableRow
+                    <TableRow 
                       key={index}
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
                       }}
                     >
-                      <TableCell align="left">
+                      <TableCell align="left" >
                         {editedNugget && editedNugget._id === item._id ? (
                           <TextField
                             multiline
                             style={{
                               width: "100%",
                             }}
-                            value={editedNugget.position}
+                            value= {editedNugget.content}
                             onChange={(e) =>
                               setEditedNugget({
                                 ...editedNugget,
-                                position: e.target.value,
+                                content: e.target.value,
                               })
                             }
                           />
                         ) : (
                           <Typography>
-                            {item.position}
+                            {item.content}
                             <br />
-                            #{item.name}
+                            #{item.topic}
                             <Box sx={{ display: "flex", cursor: "pointer" }}>
                               <Box
                                 sx={{ color: "#707cd4", mr: 1 }}
@@ -271,6 +316,8 @@ export default function Home() {
               </TableBody>
             </Table>
           </TableContainer>
+        </div>
+        <div class="full-width">
           <Box mt={2} display="flex" justifyContent="center">
             {getPageNumbers().map((pageNumber, index) => (
               <Typography
@@ -291,24 +338,28 @@ export default function Home() {
               </Typography>
             ))}
           </Box>
-        </Grid>
-      </Grid>
-      <Snackbar
-        open={open}
-        autoHideDuration={5000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert onClose={handleClose} severity="info" sx={{ width: "100%" }}>
-          {response === "add"
-            ? "Nugget added successfully"
-            : response === "delete"
-            ? "Nugget deleted successfully"
-            : response === "update"
-            ? "Nugget updated successfully"
-            : null}
-        </Alert>
-      </Snackbar>
-    </Box>
+        </div>
+        <div class="full-width">
+          <Snackbar
+            open={open}
+            autoHideDuration={5000}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <Alert onClose={handleClose} severity="info" sx={{ width: "100%" }}>
+              {response === "add"
+                ? "Nugget added successfully"
+                : response === "delete"
+                ? "Nugget deleted successfully"
+                : response === "update"
+                ? "Nugget updated successfully"
+                : null}
+            </Alert>
+          </Snackbar>
+        </div>
+      </Box>
+    </div>
+  </div>
+  
   );
 }

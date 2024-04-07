@@ -1,26 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { useDispatch } from "react-redux";
-import Button from '@mui/material/Button'; // Import Button component from Material-UI
+// Import Material-UI components
+import Button from '@mui/material/Button';
+
+// Import custom hook for getting userId from token
+import { useUserIdFromToken } from "../utils/jwtUtils";
 
 function App() {
-  const dispatch = useDispatch();
   const [nugget, setNugget] = useState(null);
+  const userId = useUserIdFromToken(); // Get userId using custom hook
 
   useEffect(() => {
-    loadRandomItem();
-  }, []);
-
-  const loadRandomItem = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/api/items/random');
-      setNugget(response.data);
-    } catch (error) {
-      console.error('Error fetching random item:', error);
+    if (userId) {
+      fetchRandomNugget(userId); // Fetch random nugget when userId changes
     }
+  }, [userId]);
+
+  const fetchRandomNugget = (userId) => {
+    axios.get(`http://localhost:8000/api/items/random/${userId}`)
+      .then(response => {
+        setNugget(response.data.response);
+      })
+      .catch(error => {
+        console.error('Error fetching nugget:', error);
+      });
   };
 
+  const handleRefreshNugget = () => {
+    fetchRandomNugget(userId); // Fetch new random nugget
+  };
+
+  // Function to render text with links
   const renderTextWithLinks = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
@@ -42,25 +53,25 @@ function App() {
   };
 
   return (
-    <div>
+    
+    <div class="content">
       <h1></h1>
       {nugget ? (
         <div className="rand">
-          {/* Render nugget.position with links and line breaks */}
-          <div>{renderTextWithLinks(nugget.position)}</div>
+          {/* Render nugget content with links */}
+          <div>{renderTextWithLinks(nugget.content)}</div>
           <p>&nbsp;</p>
           <p>
             <Button 
               class='btn'
-              onClick={loadRandomItem}
+              onClick={handleRefreshNugget} // Call handleRefreshNugget when button is clicked
             >
               Try another
             </Button>
           </p>
-          {/* Display other item details here */}
         </div>
       ) : (
-        <p>Loading...</p>
+        <p><center><br></br><br></br>No nuggets yet!</center>></p>
       )}
     </div>
   );

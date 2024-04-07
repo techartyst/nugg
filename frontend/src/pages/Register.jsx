@@ -46,7 +46,7 @@ const RegisterPage = () => {
             <h2>Create an account</h2>
             <form onSubmit={e => onSubmit(e)}>
               <div className="register-message">
-                <p>If you have an account, <a href="/login">sign in</a> here.</p>
+                <p>If you have an account, <a href="/Login">sign in</a> here.</p>
               </div>
               <div>
                 <input

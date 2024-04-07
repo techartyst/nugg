@@ -2,29 +2,16 @@ import React from 'react';
 
 function App() {
   return (
-    <div className="indx-container">
-      <h1>NURO</h1>
-      <p>Capture Study Cues Effortlessly</p>
-      <div className="indx-image-container">
-        <img src="nuro-logo.png" alt="NURO Logo" />
-      </div>
-      <a href="login" className="indx-link">Login</a>
-      <a href="register" className="indx-link">Register</a>
-      <div className="indx-icon-container">
-        <div className="indx-icon">
-          <img src="mind-icon.png" alt="Mind Icon" />
-          <p>Built for the Mind</p>
-        </div>
-        <div className="indx-icon">
-          <img src="brain-icon.png" alt="Brain Icon" />
-          <p>Built for the Brain</p>
-        </div>
-        <div className="indx-icon">
-          <img src="heart-icon.png" alt="Heart Icon" />
-          <p>Built for the Heart</p>
-        </div>
-      </div>
-    </div>
+    <div class="hcontainer">
+  <h2>Simplify Your Learning Journey.</h2>
+  <p>
+  <img class="landing-image" src="../src/assets/nuro-landing.png" alt="Landing Image"/>
+  </p>
+  <p>
+  <a href="/Login" class="btn-signup">Sign In</a>
+  </p>
+  <p class="register-text">If you are not a user, <a href="/Register" class="register-link">register here</a>.</p>
+</div>
   );
 }
 

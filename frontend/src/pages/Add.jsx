@@ -1,15 +1,11 @@
+import { useEffect } from "react";
+
 import { Autocomplete } from '@mui/material';
-
-import {
-  Alert,
-  Box,
-  Button,
-  Snackbar,
-  TextField,
-
-} from "@mui/material";
+import { Alert, Box, Button, Snackbar, TextField } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useUserIdFromToken } from "../utils/jwtUtils" ; // Import the custom hook
+
 import {
   addNugget,
   fetchNugget,
@@ -17,39 +13,46 @@ import {
   changeStateTrue,
   changeStateFalse,
 } from "../feature/nuroSlice";
-import { useEffect } from "react";
+import { ContactSupportOutlined } from "@mui/icons-material";
 
+/**
+ * Add component for adding and updating nuggets.
+ */
 export default function Home() {
   const dispatch = useDispatch();
-  const { updateState, response } = useSelector(
-    (state) => state.nuggetKey
-  );
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
-  const [position, setPosition] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [value, setValue] = useState(null); // Change initial state to null
+  const { updateState, response } = useSelector((state) => state.nuggetKey);
+  const [id, setId] = useState(""); // ID of the nugget for updating
+  const [topic, setTopic] = useState(""); // Topic input value
+  const [content, setContent] = useState(""); // Nugget content input value
+  const [suggestions, setSuggestions] = useState([]); // Suggestions for Autocomplete
+  const [value, setValue] = useState(null); // Autocomplete value
+  const userId = useUserIdFromToken();
 
-  const fetchNuggets = async () => {
-    try {
-      const action = await dispatch(fetchNugget());
-      const response = action.payload;
-      if (Array.isArray(response)) {
-        const uniqueNames = [...new Set(response.map((nugget) => nugget.name))];
-        setSuggestions(uniqueNames);
-      } else {
-        console.error('Invalid response format:', response);
-      }
-    } catch (error) {
-      console.error('Error fetching nuggets:', error);
+// Fetch nuggets a 
+useEffect(() => {
+  if (userId) {
+    dispatch(fetchNugget(userId)); // Pass userId when dispatching fetchNugget action
+  }
+}, [userId, dispatch]);
+
+  // Fetch nuggets and update the suggestions list
+const fetchNuggets = async (userId) => {
+  try {
+    const action = await dispatch(fetchNugget(userId)); // Pass userId to fetchNugget
+    const response = action.payload;
+    if (Array.isArray(response)) {
+      // Extract unique topic names from the nuggets
+      const uniqueTopics = [...new Set(response.map((nugget) => nugget.topic))];
+      setSuggestions(uniqueTopics);
+    } else {
+      console.error('Invalid response format:', response);
     }
-  };
+  } catch (error) {
+    console.error('Error fetching nuggets:', error);
+  }
+};
 
-
-  useEffect(() => {
-    dispatch(fetchNugget());
-  }, [dispatch]);
-
+  // Handle input change in the Autocomplete component
   const handleInputChange = (event, inputValue) => {
     const filteredSuggestions = suggestions.filter((name) =>
       name.toLowerCase().includes(inputValue.toLowerCase())
@@ -57,70 +60,64 @@ export default function Home() {
     setSuggestions(filteredSuggestions);
 
     if (!inputValue.trim()) {
-      fetchNuggets();
+      fetchNuggets(userId);
     }
 
     try {
-      setName(event.target.value);
-
+      setTopic(inputValue); // Set the topic to the input value
     } catch (error) {
-
+      console.error('Error handling input change:', error);
     }
   };
 
-
+  // Handle click on the Add button
+  // Setting values based on custom addition or pick from drop down
   const handleClick = (e) => {
     e.preventDefault();
     let newval = "";
 
-console.log(value);
-if(name == '')
-  {
-    console.log("name not set yet");
-    newval = value;    
-  }else{
-    newval = name;
-  }
-  
-console.log(newval);
+    if(topic === '') {
+      newval = value;    
+    } else {
+      newval = topic;
+    }
 
-// Check if both topic and nugget fields are filled
-
-    if (name !== '' && position !== '') {
+    if (topic !== '' && content !== '') {
       dispatch(
         addNugget({
-  
           name: newval,
-          position: position,
+          position: content,
+          sessionUser: userId,
         })
       );
       handleClickSnackbar();
-      setName("");
-      setPosition("");
+      setTopic("");
+      setContent("");
     } else {
       alert('Please fill out both topic and nugget fields');
     }
     setValue('');
-
   };
 
+  // Handle updating the form
   const updateForm = () => {
-    dispatch(modifiedNugget({ id: id, name: name, position: position }));
+    dispatch(modifiedNugget({ id: id, name: topic, position: content }));
     dispatch(changeStateFalse());
     handleClickSnackbar();
     setId("");
-    setName("");
-    setPosition("");
+    setTopic("");
+    setContent("");
   };
 
+  // Get the label for the Autocomplete options
   const getOptionLabel = (option) => {
-    // Handle case when option is null or undefined
     if (!option) {
-      return ''; // Provide a default label for null or undefined value
+      return '';
     }
-    return option.toString(); // Convert the option to a string
+    return option.toString();
   };
 
+  // State for Snackbar
   const [open, setOpen] = useState(false);
   const handleClickSnackbar = () => {
     setOpen(true);
@@ -130,69 +127,61 @@ console.log(newval);
   };
 
   return (
-
+    <div class="content" >
     <div className="add">
-      {/* First box */}
-      <p className="light">Add your topic of interest and study cues (nuggets) to your study arsenal! To get started, simply fill out the required fields below:</p>
+      <h4>Add your topic of interest and study cues (nuggets) to your study arsenal! </h4>
+      <p className="light">To get started, simply fill out the required fields below:</p>
       <Box
         sx={{
-          margin: '0 auto', // Center the box horizontally
-          display: 'flex', // Use flexbox layout
-          flexDirection: 'column', // Arrange children in a column
-          //height: '100vh', // Set height to 100% of viewport height
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-
-        {/* First row */}
         <Box
           sx={{
-            flex: '1', // Take up remaining vertical space
-            border: '0px solid black', // Example border for visualization
+            flex: '1',
+            border: '0px solid black',
             paddingTop:2
           }}
         >
-
-<Autocomplete
-      value={value} // Update value to accept only one value
-      onChange={(event, newValue) => setValue(newValue)}
-      freeSolo
-      options={suggestions || []}
-      getOptionLabel={getOptionLabel} // Provide getOptionLabel method
-      onInputChange={handleInputChange}
-      renderInput={(params) => (
-        <TextField {...params} label="Topic" variant="outlined" />
-      )}
-    />
-    
+          <Autocomplete
+            value={value}
+            onChange={(event, newValue) => setValue(newValue)}
+            freeSolo
+            options={suggestions || []}
+            getOptionLabel={getOptionLabel}
+            onInputChange={handleInputChange}
+            renderInput={(params) => (
+              <TextField {...params} label="Topic" variant="outlined" />
+            )}
+          />
         </Box>
-
-        {/* Second row */}
         <Box
           sx={{
-            flex: '1', // Take up remaining vertical space
-            border: '0px solid black', // Example border for visualization
-
+            flex: '1',
+            border: '0px solid black',
           }}
         >
           <TextField
             sx={{ color: "white", width: "100%", paddingTop:1}}
-
             variant="outlined"
             size="large"
             placeholder="Nugget"
             rows={6} cols={10}
             multiline
-            value={position}
+            value={content}
             onChange={(e) => {
-              setPosition(e.target.value);
+              setContent(e.target.value);
             }}
-          />      </Box>
-        {/* Third row */}
+          />
+        </Box>
         <Box
           sx={{
-            flex: '1', // Take up remaining vertical space
-            border: '0px solid black', // Example border for visualization
-            paddingTop:1          }}
+            flex: '1',
+            border: '0px solid black',
+            paddingTop:1
+          }}
         >
           {updateState ? (
             <Button
@@ -218,11 +207,9 @@ console.log(newval);
             >
               Add
             </Button>
-          )}      </Box>
+          )}
+        </Box>
       </Box>
-
-      {/* First box ends here */}
-
       <Box
         sx={{
           display: "flex",
@@ -246,18 +233,10 @@ console.log(newval);
               flexDirection: "row",
               justifyContent: "flex-start",
               gap: "8px",
-
             }}
           >
-
-
-
-
-
           </Box>
-
         </Box>
-
         <Snackbar
           open={open}
           autoHideDuration={5000}
@@ -275,6 +254,7 @@ console.log(newval);
           </Alert>
         </Snackbar>
       </Box>
+    </div>
     </div>
   );
 }

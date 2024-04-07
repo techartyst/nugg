@@ -3,11 +3,15 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const fileUpload = require('express-fileupload');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(fileUpload());
+
 
 // Set the global variable for the token
 global.userId = '';
@@ -94,6 +98,7 @@ app.get("/api/items/:userId", async (req, res) => { // Add a route parameter for
   }
 });
 
+
 app.get("/api/items/random/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -117,14 +122,13 @@ app.get("/api/items/random/:userId", async (req, res) => {
 
 app.post("/api/items", async (req, res) => {
 
-  console.log(req.body);
 
   try {
     const newItem = new Item({
       topic: req.body.name,
       content: req.body.position,
       createdBy: req.body.sessionUser,
-      fileName1:"",
+      fileName1:req.body.fileName1,
       fileName2:"",
       
     });
@@ -220,4 +224,50 @@ app.post('/api/login', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+// Handle file upload
+app.post('/api/upload', (req, res) => {
+  
+console.log("entered");
+
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+
+  const file = req.files.file;
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+
+
+  if (!allowedTypes.includes(file.mimetype)) {
+    return res.status(400).send('Invalid file type.');
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    return res.status(400).send('File size exceeds the limit.');
+  }
+  
+  const fileName = `${Date.now()}-${file.name}`;
+
+const uploadPath = path.join(__dirname, '..', 'frontend', 'resources', fileName);
+
+file.mv(uploadPath, (err) => {
+  if (err) {
+    return res.status(500).send(err);
+  }
+
+  const renamedFileName = fileName.replace(/\s/g, '_'); // Replace spaces with underscore
+  const renamedFilePath = path.join(__dirname, '..', 'frontend', 'resources', renamedFileName);
+
+  fs.rename(uploadPath, renamedFilePath, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    const fileUrl = `/${renamedFileName}`;
+    res.json({ url: fileUrl });
+  });
+});
+
 });

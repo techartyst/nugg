@@ -18,6 +18,15 @@ body{
   }
 }
 
+.toggle{
+
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color:red;
+}
+
 
 .menu{
   padding:0px;
@@ -37,25 +46,16 @@ body{
 }
 
 .footer{
-
   margin-top: 2em;
+}
 
+.fileupl{
+
+  padding: 10px;
+  font-size: 0.9rem;
 
 }
 
-.rand{
-  background-color: #fdfdf7;
-  padding:30px ;
-  margin-top: 2em;
-  vertical-align: middle;
-  font-size: 1.1em;
-  word-wrap: break-word;
-  line-height: 1.5;
-  border: 1px solid #cccccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow effect */
-
-
-}
 
 /* icons */
 .ico {

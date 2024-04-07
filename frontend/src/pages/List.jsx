@@ -19,6 +19,8 @@ import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import {renderTextWithLinks} from '../utils/renderLinks';
+
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useUserIdFromToken } from "../utils/jwtUtils" ; // Import the custom hook
 
@@ -209,20 +211,20 @@ export default function Home() {
           <TextField
             label="Search"
             variant="outlined"
-            fullWidth
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ marginBottom: 2 }}
+            sx={{ width: "100%",marginBottom: "1" }}
           />
         </div>
-        <div class="full-width">
-          <Box                 class="hash" sx={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+        <div class="full-width" >
+        <Box className="hash" sx={{ overflowY: "auto", whiteSpace: "nowrap"}}>
             {uniqueNames.map((name) => (
               <Button
                 key={name}
                 variant={selectedHashtags.includes(name) ? "contained" : "outlined"}
                 onClick={() => handleHashtagClick(name)}
                 sx={{ margin: 1, backgroundColor: selectedHashtags.includes(name) ? "lightgray" : "transparent" }}
+                style={{height: "30px",fontSize: "0.7rem", color:"#333", borderColor:"#999" }}
               >
                 #{name}
               </Button>
@@ -231,7 +233,7 @@ export default function Home() {
         </div>
         <div class="full-width">
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 659 }} aria-label="simple table">
+            <Table aria-label="simple table">
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#4b4d5c" }}>
                   <TableCell align="left">
@@ -279,7 +281,7 @@ export default function Home() {
                           />
                         ) : (
                           <Typography>
-                            {item.content}
+                            {renderTextWithLinks(item.content)}
                             <br />
                             #{item.topic}
                             <Box sx={{ display: "flex", cursor: "pointer" }}>

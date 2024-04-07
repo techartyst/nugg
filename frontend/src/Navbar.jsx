@@ -26,6 +26,7 @@ const Navbar = () => {
           <Link title="list all"  className='ico'  to="/list"><i class="fa fa-bars "></i></Link>
           <Link title="about"  className='ico'  to="/about"><i class="fa fa-code"></i></Link>
           <Link title="logout"  className='ico'  to="#" onClick={handleLogout}><i class="fa fa-times "></i></Link>
+
           </center>
         </div>
       

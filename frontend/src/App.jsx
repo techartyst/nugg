@@ -11,6 +11,7 @@ import Add from "./pages/Add";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Index from "./pages/index";
+import File from "./pages/File";
 
 import Navbar from "./Navbar";
 
@@ -19,8 +20,6 @@ const isAuthenticated = () => {
   // Check if token is present in localStorage
   return sessionStorage.getItem('nuroapp') !== null;
 };
-
-
 
 // Protected component to conditionally render protected routes
 const Protected = ({ element, ...rest }) => {
@@ -38,7 +37,7 @@ const NavbarWrapper = () => {
   // Function to determine if Navbar should be displayed based on current route
   const showNavbar = () => {
     const { pathname } = location;
-    return !['/Login', '/Index' , '/Register','/About'].includes(pathname);
+    return !['/Login', '/Index' , '/Register','/About','/login', '/index' , '/register','/about'].includes(pathname);
   };
 
   return showNavbar() ? <Navbar /> : null;
@@ -64,6 +63,8 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/index" element={<Index />} />
+            <Route path="/file" element={<File />} />
+
 
           </Routes>
         </div>

@@ -1,78 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-// Import Material-UI components
 import Button from '@mui/material/Button';
-
-// Import custom hook for getting userId from token
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useUserIdFromToken } from "../utils/jwtUtils";
+import {renderTextWithLinks} from '../utils/renderLinks';
+
 
 function App() {
-  const [nugget, setNugget] = useState(null);
-  const userId = useUserIdFromToken(); // Get userId using custom hook
+  const [nuggets, setNuggets] = useState([]);
+  const [displaySingle, setDisplaySingle] = useState(true); // State to toggle between single and multiple display
+  const userId = useUserIdFromToken();
 
   useEffect(() => {
     if (userId) {
-      fetchRandomNugget(userId); // Fetch random nugget when userId changes
+      if (displaySingle) {
+        fetchRandomNugget(userId);
+      } else {
+        fetchRandomNuggets(userId);
+      }
     }
-  }, [userId]);
+  }, [userId, displaySingle]);
 
   const fetchRandomNugget = (userId) => {
     axios.get(`http://localhost:8000/api/items/random/${userId}`)
       .then(response => {
-        setNugget(response.data.response);
+        setNuggets([response.data.response]);
       })
       .catch(error => {
         console.error('Error fetching nugget:', error);
       });
   };
 
-  const handleRefreshNugget = () => {
-    fetchRandomNugget(userId); // Fetch new random nugget
+  const fetchRandomNuggets = (userId) => {
+    axios.get(`http://localhost:8000/api/items/${userId}`)
+      .then(response => {
+        const randomizedNuggets = response.data.response.sort(() => Math.random() - 0.5);
+        setNuggets(randomizedNuggets);
+      })
+      .catch(error => {
+        console.error('Error fetching nuggets:', error);
+      });
   };
 
-  // Function to render text with links
-  const renderTextWithLinks = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
-
-    return parts.map((part, index) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a key={index} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
-        );
-      } else {
-        return part.split('\n').map((line, index) => (
-          <React.Fragment key={index}>
-            {line}
-            <br />
-          </React.Fragment>
-        ));
-      }
-    });
+  const handleRefreshNuggets = () => {
+    if (displaySingle) {
+      fetchRandomNugget(userId);
+    } else {
+      fetchRandomNuggets(userId);
+    }
   };
 
+  const toggleDisplayMode = () => {
+    setDisplaySingle(!displaySingle);
+  };
+
+  
   return (
-    
-    <div class="content">
-      <h1></h1>
-      {nugget ? (
-        <div className="rand">
-          {/* Render nugget content with links */}
-          <div>{renderTextWithLinks(nugget.content)}</div>
-          <p>&nbsp;</p>
-          <p>
-            <Button 
-              class='btn'
-              onClick={handleRefreshNugget} // Call handleRefreshNugget when button is clicked
-            >
-              Try another
-            </Button>
-          </p>
+    <div className="content">
+      <div class="toggle">
+        <ToggleButtonGroup
+          value={displaySingle}
+          exclusive
+          onChange={toggleDisplayMode}
+        >
+          <ToggleButton value={true} style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.7rem" }}>
+            Single
+          </ToggleButton>
+          <ToggleButton value={false} style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.7rem" }}>
+            Multiple
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+      <div>
+        {nuggets.length > 0 ? (
+          <div>
+            {nuggets.map((nugget, index) => (
+              <div className="paper" key={index}>
+
+                <div class="papercontent">
+                <p>
+                <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+                &nbsp;&nbsp;<strong>{nugget.topic} nugget</strong></p>
+
+                  <p>{renderTextWithLinks(nugget.content)}</p></div>
+                  {nugget.fileName1 !== "" && (
+  <div>
+    <a href={`resources${nugget.fileName1}`}  target="_blank" rel="noopener noreferrer">Open file</a>
+  </div>
+)}
+              </div>
+            ))}
+
+          </div>
+        ) : (
+          <p><center><br /><br />No nuggets yet!</center></p>
+        )}
+      </div>
+      <div style={{ textAlign: "right", marginTop: "1rem" }}>
+
+        <Button onClick={handleRefreshNuggets}  style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.8rem", color:"#333" }}>
+        <i class="fa fa-random" aria-hidden="true"></i>&nbsp; Try another
+        </Button>
         </div>
-      ) : (
-        <p><center><br></br><br></br>No nuggets yet!</center>></p>
-      )}
+
     </div>
   );
 }

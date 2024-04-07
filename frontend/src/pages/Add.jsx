@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import axios from 'axios';
 
 import { Autocomplete } from '@mui/material';
 import { Alert, Box, Button, Snackbar, TextField } from "@mui/material";
@@ -26,6 +27,7 @@ export default function Home() {
   const [content, setContent] = useState(""); // Nugget content input value
   const [suggestions, setSuggestions] = useState([]); // Suggestions for Autocomplete
   const [value, setValue] = useState(null); // Autocomplete value
+  const [fileurl, setFile] = useState(null); // Uploaded file
   const userId = useUserIdFromToken();
 
 // Fetch nuggets a 
@@ -88,11 +90,15 @@ const fetchNuggets = async (userId) => {
           name: newval,
           position: content,
           sessionUser: userId,
+          fileName1: fileurl,
         })
       );
       handleClickSnackbar();
       setTopic("");
       setContent("");
+      setFile("");
+      setSelectedFile(null); // Clear selected file
+      setUploadMessage(null); // Clear upload message
     } else {
       alert('Please fill out both topic and nugget fields');
     }
@@ -117,6 +123,38 @@ const fetchNuggets = async (userId) => {
     return option.toString();
   };
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadMessage, setUploadMessage] = useState(null);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await axios.post('http://localhost:8000/api/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setFile(response.data.url);
+        // Display success message
+        setUploadMessage(`File uploaded successfully. URL: ${response.data.url}`);
+      } catch (error) {
+        // Display error message in red
+        if (error.response) {
+          setUploadMessage(<span style={{ color: 'red' }}>Upload failed: {error.response.data}</span>);
+        } else {
+          setUploadMessage(<span style={{ color: 'red' }}>Upload failed: Network Error</span>);
+          console.error(error);
+        }
+      }
+    }
+  };
+
+
   // State for Snackbar
   const [open, setOpen] = useState(false);
   const handleClickSnackbar = () => {
@@ -126,6 +164,8 @@ const fetchNuggets = async (userId) => {
     setOpen(false);
   };
 
+
+  
   return (
     <div class="content" >
     <div className="add">
@@ -176,6 +216,24 @@ const fetchNuggets = async (userId) => {
             }}
           />
         </Box>
+        <Box>
+  <div class="fileupl">
+    <p>Attach a file (accepted formats: PDF, JPG, PNG, GIF; max size: 5MB) by clicking 'Choose File'."
+</p>
+<p>&nbsp;</p>
+    <input
+      type="file"
+      accept="image/jpeg, image/png, image/gif, application/pdf"
+      onChange={handleFileChange}
+    />
+    {selectedFile ? (
+      <div style={{ marginTop: '8px' }}>{selectedFile.name}</div>
+    ) : (
+      <div style={{ marginTop: '8px' }}></div>
+    )}
+    {uploadMessage && <div style={{ marginTop: '8px' }}>{uploadMessage}</div>}
+  </div>
+</Box>
         <Box
           sx={{
             flex: '1',
@@ -236,6 +294,7 @@ const fetchNuggets = async (userId) => {
             }}
           >
           </Box>
+          
         </Box>
         <Snackbar
           open={open}

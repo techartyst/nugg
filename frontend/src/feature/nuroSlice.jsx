@@ -63,6 +63,7 @@ export const addNugget = createAsyncThunk(
       name: data.name,
       position: data.position,
       sessionUser:data.sessionUser,
+      fileName1: data.fileName1,
     });
     console.log(data);
     return response.data.response;

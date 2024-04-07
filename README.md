@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # nuro
 Nuro is a simple app designed to help you capture concise study cues effortlessly.
 =======

@@ -61,10 +61,14 @@ const ItemSchema = new mongoose.Schema({
     required: false,
   }
   , createdBy: { type: String, required: false, }
+  , createdUser: {
+    type: mongoose.Schema.Types.Mixed,
+    required: false,
+  }
   , createdAt: { type: Date, default: Date.now },
 });
 
-const Item = mongoose.model("Nug", ItemSchema);
+const Item = mongoose.model("Nugap", ItemSchema);
 
 
 // Defining user schema
@@ -77,9 +81,21 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+
+// Defining todo schema
+const todoSchema = new mongoose.Schema({
+  todo: { type: String, unique: true, required: true },
+  date: { type: String, required: true },
+
+});
+
+const ToDo = mongoose.model('ToDo', todoSchema);
+
+
 app.get("/api", (req, res) => {
   res.status(200).send({ response: "api worked.." });
 });
+
 
 
 app.get("/api/items/:userId", async (req, res) => { // Add a route parameter for userId
@@ -99,29 +115,11 @@ app.get("/api/items/:userId", async (req, res) => { // Add a route parameter for
 });
 
 
-app.get("/api/items/random/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    
-    // Fetch the total count of nuggets for the user
-    const totalNuggets = await Item.countDocuments({ createdBy: userId });
-
-    // Generate a random index within the range of total nuggets
-    const randomIndex = Math.floor(Math.random() * totalNuggets);
-
-    // Find a random nugget for the user
-    const randomNugget = await Item.findOne({ createdBy: userId }).skip(randomIndex).exec();
-
-    // Send the random nugget as a response
-    res.status(200).send({ response: randomNugget });
-  } catch (err) {
-    // Handle errors
-    res.status(500).send({ response: err.message });
-  }
-});
 
 app.post("/api/items", async (req, res) => {
 
+ const user = await User.findById(req.body.sessionUser );
+ user.password = "<masked>";
 
   try {
     const newItem = new Item({
@@ -130,12 +128,14 @@ app.post("/api/items", async (req, res) => {
       createdBy: req.body.sessionUser,
       fileName1:req.body.fileName1,
       fileName2:"",
+      createdUser: user
       
     });
     await newItem
       .save()
       .then((response) => {
         res.status(200).send({ response: response });
+
       })
       .catch((err) => {
         res.status(500).send({ response: err.message });
@@ -200,6 +200,7 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
+
   try {
     const user = await User.findOne({ username });
     // If user not found, return an error

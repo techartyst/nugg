@@ -1,110 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Button from '@mui/material/Button';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Button from "@mui/material/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNugget } from "../feature/nuroSlice";
 import { useUserIdFromToken } from "../utils/jwtUtils";
-import {renderTextWithLinks} from '../utils/renderLinks';
+import { renderTextWithLinks } from '../utils/renderLinks';
 
-
-function App() {
-  const [nuggets, setNuggets] = useState([]);
-  const [displaySingle, setDisplaySingle] = useState(true); // State to toggle between single and multiple display
+export default function Home() {
+  const dispatch = useDispatch();
+  const { loading, nuggetList, response } = useSelector((state) => state.nuggetKey);
+  const [displaySingle, setDisplaySingle] = useState(true);
+  const [singleNuggetIndex, setSingleNuggetIndex] = useState(null); // State to hold the index of the currently displayed single nugget
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const userId = useUserIdFromToken();
 
   useEffect(() => {
     if (userId) {
-      if (displaySingle) {
-        fetchRandomNugget(userId);
-      } else {
-        fetchRandomNuggets(userId);
-      }
+      dispatch(fetchNugget(userId));
     }
-  }, [userId, displaySingle]);
-
-  const fetchRandomNugget = (userId) => {
-    axios.get(`http://localhost:8000/api/items/random/${userId}`)
-      .then(response => {
-        setNuggets([response.data.response]);
-      })
-      .catch(error => {
-        console.error('Error fetching nugget:', error);
-      });
-  };
-
-  const fetchRandomNuggets = (userId) => {
-    axios.get(`http://localhost:8000/api/items/${userId}`)
-      .then(response => {
-        const randomizedNuggets = response.data.response.sort(() => Math.random() - 0.5);
-        setNuggets(randomizedNuggets);
-      })
-      .catch(error => {
-        console.error('Error fetching nuggets:', error);
-      });
-  };
-
-  const handleRefreshNuggets = () => {
-    if (displaySingle) {
-      fetchRandomNugget(userId);
-    } else {
-      fetchRandomNuggets(userId);
+    
+    // Initialize single nugget index with a random value on component mount
+    if (displaySingle && nuggetList.length > 0 && singleNuggetIndex === null) {
+      const randomIndex = Math.floor(Math.random() * nuggetList.length);
+      setSingleNuggetIndex(randomIndex);
     }
+  }, [userId, dispatch, displaySingle, nuggetList, singleNuggetIndex]);
+
+  const handleToggleDisplayMode = (event, newDisplaySingle) => {
+    if (newDisplaySingle) {
+      // Select a random nugget index when switching to single view
+      const randomIndex = Math.floor(Math.random() * nuggetList.length);
+      setSingleNuggetIndex(randomIndex);
+    }
+    setDisplaySingle(newDisplaySingle);
   };
 
-  const toggleDisplayMode = () => {
-    setDisplaySingle(!displaySingle);
+  const handleRefreshNugget = () => {
+    // Select a new random nugget index
+    const randomIndex = Math.floor(Math.random() * nuggetList.length);
+    setSingleNuggetIndex(randomIndex);
   };
 
-  
   return (
     <div className="content">
-      <div class="toggle">
+      <Box mt={5} display="flex" justifyContent="space-between" alignItems="center">
+        <div className="full-width">
+         
+        </div>
         <ToggleButtonGroup
           value={displaySingle}
           exclusive
-          onChange={toggleDisplayMode}
+          onChange={handleToggleDisplayMode}
+          aria-label="display mode"
         >
-          <ToggleButton value={true} style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.7rem" }}>
+          <ToggleButton value={true} aria-label="single nugget"  style={{ height: "30px", paddingTop: "0", paddingBottom: "0", fontSize: "0.7rem" }}>
             Single
           </ToggleButton>
-          <ToggleButton value={false} style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.7rem" }}>
-            Multiple
+          <ToggleButton value={false} aria-label="all nuggets"  style={{ height: "30px", paddingTop: "0", paddingBottom: "0", fontSize: "0.7rem" }}>
+            All
           </ToggleButton>
         </ToggleButtonGroup>
-      </div>
-      <div>
-        {nuggets.length > 0 ? (
-          <div>
-            {nuggets.map((nugget, index) => (
-              <div className="paper" key={index}>
+      </Box>
+      <div> {/* Assuming "paper" is the class for the box */}
+        <Box mt={2}>
+        {loading ? (
+            <Typography>Loading...</Typography>
+          ) : nuggetList.length === 0 ? (
+            <Typography>Uh oh! It seems like there are no nuggets here yet. Why not be the pioneer and <a href='/add'>add the very first nugget?</a> Go ahead, share your wisdom! </Typography>
+          ) : displaySingle ? (
+            singleNuggetIndex !== null && ( // Render only if singleNuggetIndex is not null
+              <Box className="nugget-box paper" sx={{ mb: 2 }}>
+                              <div className="papercontent">
 
-                <div class="papercontent">
-                <p>
-                <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
-                &nbsp;&nbsp;<strong>{nugget.topic} nugget</strong></p>
-
-                  <p>{renderTextWithLinks(nugget.content)}</p></div>
-                  {nugget.fileName1 !== "" && (
+                <Typography>{renderTextWithLinks(nuggetList[singleNuggetIndex].content)}</Typography>
+                <Typography>#{nuggetList[singleNuggetIndex].topic}</Typography>
+                { nuggetList[singleNuggetIndex].fileName1 && nuggetList[singleNuggetIndex].fileName1.trim() !== "" && (
   <div>
-    <a href={`resources${nugget.fileName1}`}  target="_blank" rel="noopener noreferrer">Open file</a>
+    <a
+      href={`resources/${nuggetList[singleNuggetIndex].fileName1}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open document
+    </a>
   </div>
 )}
-              </div>
-            ))}
-
-          </div>
-        ) : (
-          <p><center><br /><br />No nuggets yet!</center></p>
-        )}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}> <Button onClick={handleRefreshNugget} sx={{ mt: 2 }}>
+    
+    Refresh
+  </Button>
+</div>
+</div>
+              </Box>
+            )
+            
+          ) : (
+            nuggetList.map((nugget, index) => (
+              <Box key={index} className="nugget-box paper" sx={{ mb: 2 }}> {/* Assuming "paper" class adds paper styling */}
+              <div className="papercontent">
+                                <Typography>{renderTextWithLinks(nugget.content)}</Typography>
+                <Typography>#{nugget.topic}</Typography>
+                </div>
+                { nugget.fileName1 && nugget.fileName1.trim() !== "" && (
+  <div>
+    <a
+      href={`resources/${nugget.fileName1}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open document
+    </a>
+  </div>
+)}
+              </Box>
+            ))
+          )}
+        
+                </Box>
       </div>
-      <div style={{ textAlign: "right", marginTop: "1rem" }}>
-
-        <Button onClick={handleRefreshNuggets}  style={{height: "30px",paddingTop:"0",paddingBottom:"0",fontSize: "0.8rem", color:"#333" }}>
-        <i class="fa fa-random" aria-hidden="true"></i>&nbsp; Try another
-        </Button>
-        </div>
-
     </div>
   );
 }
-
-export default App;

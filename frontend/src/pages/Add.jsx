@@ -14,7 +14,6 @@ import {
   changeStateTrue,
   changeStateFalse,
 } from "../feature/nuroSlice";
-import { ContactSupportOutlined } from "@mui/icons-material";
 
 /**
  * Add component for adding and updating nuggets.

@@ -12,8 +12,12 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Index from "./pages/index";
 import File from "./pages/File";
+import ToDo from "./pages/ToDo";
+
 
 import Navbar from "./Navbar";
+
+
 
 // Function to check if user is authenticated
 const isAuthenticated = () => {
@@ -59,6 +63,8 @@ const App = () => {
             <Route path="/" element={<Protected element={<Home />} />} />
             <Route path="/list" element={<Protected element={<List />} />} />
             <Route path="/add" element={<Protected element={<Add />} />} />
+            <Route path="/todo" element={<Protected element={<ToDo />} />} />
+
             <Route path="/about" element={<About />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />

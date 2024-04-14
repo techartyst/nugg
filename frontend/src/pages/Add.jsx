@@ -168,7 +168,7 @@ const fetchNuggets = async (userId) => {
   return (
     <div class="content" >
     <div className="add">
-      <h4>Add your topic of interest and study cues (nuggets) to your study arsenal! </h4>
+      <p>Expand your repository of knowledge with a fresh addition – introduce a new nugget of information and topic to explore!</p>
       <p className="light">To get started, simply fill out the required fields below:</p>
       <Box
         sx={{
@@ -206,7 +206,7 @@ const fetchNuggets = async (userId) => {
             sx={{ color: "white", width: "100%", paddingTop:1}}
             variant="outlined"
             size="large"
-            placeholder="Nugget"
+            placeholder="Nugg"
             rows={6} cols={10}
             multiline
             value={content}

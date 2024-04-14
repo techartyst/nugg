@@ -1,17 +1,17 @@
-# nuro
-Nuro is a simple app designed to help you capture concise study cues effortlessly.
+# nugg
+Nugg is a simple app designed to help you capture concise study cues effortlessly.
 =======
 
 Simplifying Learning, One Snippet at a Time.
-Nuro is a simple app designed to help you capture concise study cues effortlessly.
+Nugg is a simple app designed to help you capture concise study cues effortlessly.
 
-In the age of information overload, where there's too much going on, Nuro provides a simple solution. It allows you to record knowledge snippets (we call it nuggets) that you hear, read, reflect on, and engage with, and tag them under specific topics.
+In the age of information overload, where there's too much going on, Nugg provides a simple solution. It allows you to record knowledge snippets (we call it nuggets) that you hear, read, reflect on, and engage with, and tag them under specific topics.
 
-Nuro is mobile-friendly, ensuring that you can access your study cues anytime, anywhere, from any device.
+Nugg is mobile-friendly, ensuring that you can access your study cues anytime, anywhere, from any device.
 
-With Nuro's "Random Nugget" feature, you can run our algorithm to receive a random snippet from your collection. This innovative approach helps reindex your mind and reorganize your information, making learning more engaging and efficient.
+With Nugg's "Random Nugget" feature, you can run our algorithm to receive a random snippet from your collection. This innovative approach helps reindex your mind and reorganize your information, making learning more engaging and efficient.
 
-Additionally, Nuro allows you to organize and retrieve your knowledge snippets by tags. You can easily navigate through your collection, filter by specific topics, and review related information effortlessly.
+Additionally, Nugg allows you to organize and retrieve your knowledge snippets by tags. You can easily navigate through your collection, filter by specific topics, and review related information effortlessly.
 
 ### Technologies and Libraries Used
 
@@ -35,6 +35,13 @@ Additionally, Nuro allows you to organize and retrieve your knowledge snippets b
 The project has `frontend` and `backend` directories. `frontend` contains the React app; `backend` hosts the Express server and MongoDB configuration.
 
 ### Installation and Usage
+
+**Step 0:** Env variables
+Create a .env file in the backend folder.
+Add two variables
+DB_HOST=<Define your mongodb host>
+NUGG_SALT = <Define the salt you need to use in password encryption>
+
 
 **Step 1:** Install and Run Backend Dependencies
 ```bash

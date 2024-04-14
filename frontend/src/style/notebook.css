@@ -4,16 +4,19 @@
   -ms-box-sizing:border-box;
   -o-box-sizing:border-box;
   box-sizing:border-box;
+
 }
 
 .paper {
-  background: linear-gradient(to bottom, #fdfdf7, 24px, #e0dede 1px);
+
+  background: linear-gradient(to bottom, #fff, 24px, #e0dede 1px);
   margin: 15px auto;
   background-size: 100% 25px;
   position: relative;
   padding-left: 35px;
   padding-right: 20px;
-  padding-bottom: 25px;
+  padding-bottom: 15px;
+  padding-top: 10px;
   overflow: hidden;
   border-radius: 5px;
   -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, .2), 0px 0px 6px rgba(0, 0, 0, .2);
@@ -51,14 +54,16 @@ header h1 {
 }
 
 .papercontent {
-  margin-top: 28px;
+  margin-top: 21px;
   font-size: 16px;
   line-height:25px;
 }
 
 .papercontent p {
   margin: 0 0 0px 0;
-color:#666;
+color:#333 ;
+font-family: 'DM Sans', sans-serif;
+
 }
 
 

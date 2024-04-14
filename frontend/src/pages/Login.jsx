@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     loginUser
 } from "../feature/nuroSlice";
+import { BoyTwoTone } from '@mui/icons-material';
 
 const Login = () => {
     const navigateTo = useNavigate();
@@ -37,11 +38,11 @@ const Login = () => {
                 const token = response.payload.token;
                 sessionStorage.setItem('nuroapp', token); // You can also use sessionStorage if you want the token to be cleared when the browser is closed
                 // If login successful, redirect to dashboard or do something else
-                navigateTo("/");
+                navigateTo("/home");
                 console.log('Login successful');
             }else{
                 console.log('Login unsuccessful');
-
+                document.getElementById('errorMessage').style.display = 'block';
             }
 
         } catch (err) {
@@ -50,18 +51,28 @@ const Login = () => {
     };
 
     return (
+        <div>
+<div className='logo'>nugg</div>
+
+
         <div class="container">
+        &nbsp;
+
   <div class="login-box">
             <h2>Sign in to your account</h2>
+            <div id="errorMessage" style={{ color: 'red', display: 'none', paddingBottom: 10 }}>Signin failed! Please check your credentials.</div>
+
             <form onSubmit={e => onSubmit(e)}>
                 <input
-                    type='text'
-                    placeholder='Username'
+                    type='email'
+                    placeholder='Email address'
                     name='username'
                     className='textbox'
                     value={username}
                     onChange={e => onChange(e)}
                     required
+                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" // Specify email pattern for additional validation
+
                 />
                 <input
                     type='password'
@@ -81,6 +92,8 @@ const Login = () => {
     <a href="#" class="forgot-password">Forgot Password?</a>
             </div>
 </div>
+</div>
+
     );
 };
 

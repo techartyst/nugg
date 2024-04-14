@@ -48,9 +48,9 @@ export default function Home() {
 
   return (
     <div className="content">
-      <Box mt={5} display="flex" justifyContent="space-between" alignItems="center">
+      <Box mt={0} display="flex" justifyContent="space-between" alignItems="center">
         <div className="full-width">
-         
+        Find wisdom in every nugg!
         </div>
         <ToggleButtonGroup
           value={displaySingle}
@@ -66,12 +66,12 @@ export default function Home() {
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      <div> {/* Assuming "paper" is the class for the box */}
-        <Box mt={2}>
+      <div> 
+        <Box mt={0}>
         {loading ? (
             <Typography>Loading...</Typography>
           ) : nuggetList.length === 0 ? (
-            <Typography>Uh oh! It seems like there are no nuggets here yet. Why not be the pioneer and <a href='/add'>add the very first nugget?</a> Go ahead, share your wisdom! </Typography>
+            <Typography style={{ marginTop: '10px' }}>Uh oh! It seems like there are no nuggs here yet. Why not <a href='/add'>add your very first nugget?</a> Go ahead, share your wisdom! </Typography>
           ) : displaySingle ? (
             singleNuggetIndex !== null && ( // Render only if singleNuggetIndex is not null
               <Box className="nugget-box paper" sx={{ mb: 2 }}>
@@ -90,9 +90,9 @@ export default function Home() {
     </a>
   </div>
 )}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}> <Button onClick={handleRefreshNugget} sx={{ mt: 2 }}>
-    
-    Refresh
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+  <Button class="refresh" onClick={handleRefreshNugget} sx={{ mt: 2 }} title="Refresh for a random nugg">
+    <i class="fa fa-refresh" aria-hidden="true"></i>
   </Button>
 </div>
 </div>

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
 const nuroState = {
   updateState: false,
   loading: false,
@@ -14,10 +15,13 @@ export const registerUser = createAsyncThunk(
   async ({ username, password,fullname }) => {
     try {
       const response = await axios.post("http://localhost:8000/api/register", { username, password, fullname });
-      return response.data.response;
+      return response.data.message;
+
+
     } catch (error) {
-      console.error("Error occurred:", error);
-      return error.response.data;
+      //console.error("Error occurred:", error);
+      return error.response.data.message;
+
     }
   }
 );
@@ -38,11 +42,10 @@ export const loginUser = createAsyncThunk(
 export const fetchNugget = createAsyncThunk(
   "nugget/fetchNugget",
   async (userId) => { // Accept userId as a parameter
-    const response = await axios.get(`http://localhost:8000/api/items/${userId}`); // Use userId in the API request URL
+    const response = await axios.get("http://localhost:8000/api/items/${userId}"); // Use userId in the API request URL
     return response.data.response;
   }
 );
-
 
 
 export const fetchRandomNugget = createAsyncThunk(

@@ -1,4 +1,6 @@
 const express = require("express");
+require('dotenv').config();
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require('bcrypt');
@@ -6,6 +8,9 @@ const jwt = require('jsonwebtoken');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
+
+const dbHost = process.env.DB_HOST;
+
 
 const app = express();
 app.use(express.json());
@@ -16,14 +21,12 @@ app.use(fileUpload());
 // Set the global variable for the token
 global.userId = '';
 
-
 // Secret key for JWT signing (should be kept secret and not hard-coded)
-const secretKey = 'UAE!f0und19-47@';
-
+const secretKey = process.env.NUGG_SALT;
 
 const connectDB = async () => {
   try {
-    const db = await mongoose.connect("mongodb+srv://zamantony:dzKSYeHl5uFffI03@cluster0.nfnpude.mongodb.net/nuroapp", {
+    const db = await mongoose.connect(dbHost, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
@@ -187,15 +190,28 @@ app.listen(8000, () => {
 
 app.post('/api/register', async (req, res) => {
   const { username, password, fullname } = req.body;
+
+
+  const userExists = await User.findOne({ username });
+
+  if(!userExists)
+{
+  
   try {
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword, fullname });
 
     await user.save();
-    res.json({ message: 'Registration successful' });
+    return res.status(200).json({ message: 'Successfull' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
+}else{
+  return res.status(500).json({ message: 'User exists' });
+
+}
+  
 });
 
 app.post('/api/login', async (req, res) => {
@@ -218,7 +234,7 @@ app.post('/api/login', async (req, res) => {
 
     // If everything is correct, return a success message
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, username: user.username }, secretKey);
+    const token = jwt.sign({ id: user.id, fullname: user.fullname }, secretKey);
     res.json({ token });
 
   } catch (error) {
@@ -230,16 +246,14 @@ app.post('/api/login', async (req, res) => {
 // Handle file upload
 app.post('/api/upload', (req, res) => {
   
-console.log("entered");
+
 
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
   }
 
-
   const file = req.files.file;
   const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-
 
   if (!allowedTypes.includes(file.mimetype)) {
     return res.status(400).send('Invalid file type.');

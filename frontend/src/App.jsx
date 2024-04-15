@@ -8,7 +8,7 @@ import About from "./pages/About";
 import Add from "./pages/Add";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import Index from "./pages/index";
+import Index from "./pages/Index";
 import File from "./pages/File";
 import ToDo from "./pages/ToDo";
 import Navbar from "./Navbar";

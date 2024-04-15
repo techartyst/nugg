@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+const apiUrl ="http://localhost:8000";
 
 const nuroState = {
   updateState: false,
@@ -14,7 +14,7 @@ export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async ({ username, password,fullname }) => {
     try {
-      const response = await axios.post("http://localhost:8000/api/register", { username, password, fullname });
+      const response = await axios.post(apiUrl+"/api/register", { username, password, fullname });
       return response.data.message;
 
 
@@ -31,7 +31,7 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ username, password }) => {
     try {
-      const response = await axios.post("http://localhost:8000/api/login", { username, password });
+      const response = await axios.post(apiUrl+"/api/login", { username, password });
       return response.data;
     } catch (error) {
       throw error.response.data;
@@ -42,7 +42,7 @@ export const loginUser = createAsyncThunk(
 export const fetchNugget = createAsyncThunk(
   "nugget/fetchNugget",
   async (userId) => { // Accept userId as a parameter
-    const response = await axios.get("http://localhost:8000/api/items/${userId}"); // Use userId in the API request URL
+    const response = await axios.get(apiUrl+`/api/items/${userId}`); // Use userId in the API request URL
     return response.data.response;
   }
 );
@@ -52,7 +52,7 @@ export const fetchRandomNugget = createAsyncThunk(
   'nugget/fetchRandomNugget',
   async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/items/random/${userId}`);
+      const response = await axios.get(apiUrl+`/api/items/random/${userId}`);
       return response.data.response; // Assuming the response contains the nugget object
     } catch (error) {
       throw error; // Throw the error for handling in the component
@@ -62,13 +62,12 @@ export const fetchRandomNugget = createAsyncThunk(
 export const addNugget = createAsyncThunk(
   "nugget/addNugget",
   async (data) => {
-    const response = await axios.post("http://localhost:8000/api/items", {
+    const response = await axios.post(apiUrl+"/api/items", {
       name: data.name,
       position: data.position,
       sessionUser:data.sessionUser,
       fileName1: data.fileName1,
     });
-    console.log(data);
     return response.data.response;
   }
 );
@@ -78,7 +77,7 @@ export const getTopic = createAsyncThunk(
   async (value) => {
     try {
       // Send a GET request to your API endpoint with the input value
-      const response = await axios.get(`http://localhost:8000/api/items?name=${value}`);
+      const response = await axios.get(apiUrl+`/api/items?name=${value}`);
       // Extract and return the response data
       return response.data;
     } catch (error) {
@@ -93,7 +92,7 @@ export const removeNugget = createAsyncThunk(
   "nugget/removeNugget",
   async (data) => {
     const response = await axios.delete(
-      `http://localhost:8000/api/items/${data}`
+      apiUrl+`/api/items/${data}`
     );
     return response.data.response;
   }
@@ -103,7 +102,7 @@ export const modifiedNugget = createAsyncThunk(
   "nugget/modifiedNugget",
   async (data) => {
     const response = await axios.put(
-      `http://localhost:8000/api/items/${data.id}`,
+      apiUrl+`/api/items/${data.id}`,
       {
         name: data.name,
         position: data.position,

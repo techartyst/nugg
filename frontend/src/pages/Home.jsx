@@ -18,7 +18,6 @@ export default function Home() {
   const [singleNuggetIndex, setSingleNuggetIndex] = useState(null); // State to hold the index of the currently displayed single nugget
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const userId = useUserIdFromToken();
-
   useEffect(() => {
     if (userId) {
       dispatch(fetchNugget(userId));

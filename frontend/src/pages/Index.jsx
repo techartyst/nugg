@@ -1,5 +1,6 @@
 import React from 'react';
 import { getUserFromToken } from "../utils/jwtUtils";
+import imgUrl from "../assets/nuro-landing.png";
 
 function App() {
   const userfullname = getUserFromToken();
@@ -8,8 +9,10 @@ function App() {
     <div class="hcontainer">
       <h2>Simplify your learning journey.</h2>
       <p>
-        <img class="landing-image" src="../src/assets/nuro-landing.png" alt="Landing Image"/>
+        <img class="landing-image" src={imgUrl} alt="Landing Image"/>
       </p>
+      <p>nugg is a simple app designed to help you capture and revise concise study notes effortlessly.</p>
+      <br></br>
       {(!userfullname || userfullname.trim() === '') ? (
         <div>
           <p>

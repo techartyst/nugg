@@ -29,7 +29,7 @@ export default function Home() {
 
   const [editedNugget, setEditedNugget] = useState(null);
   const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(3);
+  const [rowsPerPage] = useState(25);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredNuggets, setFilteredNuggets] = useState([]);
   const [selectedHashtags, setSelectedHashtags] = useState([]);

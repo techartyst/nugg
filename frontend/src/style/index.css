@@ -104,6 +104,8 @@ box-shadow: 3px 3px 3px rgba(0, 0, 0, .1), 0px 0px 6px rgba(0, 0, 0, .1);
 
 }
 
+.logo a{text-decoration: none;}
+
 .footer{
   margin-top: 2em;
 }

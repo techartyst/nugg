@@ -7,6 +7,8 @@ function App() {
 
   return (
     <div class="hcontainer">
+      <h2 className='logo'>nugg</h2>
+      <br></br>
       <h2>Simplify your learning journey.</h2>
       <p>
         <img class="landing-image" src={imgUrl} alt="Landing Image"/>

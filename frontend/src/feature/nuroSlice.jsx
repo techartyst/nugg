@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const apiUrl ="http://localhost:8000";
-//const apiUrl ="https://nugg.onrender.com";
+//const apiUrl ="http://localhost:8000";
+const apiUrl ="https://nugg.onrender.com";
 
 
 

@@ -5,6 +5,7 @@ import "./style/index.css";
 import "./style/notebook.css";
 import "./style/profile.css";
 
+
 import { Provider } from "react-redux";
 import store from "./app/store.jsx";
 

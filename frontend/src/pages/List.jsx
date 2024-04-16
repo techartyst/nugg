@@ -5,10 +5,10 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import {renderTextWithLinks} from '../utils/renderLinks';
+import { renderTextWithLinks } from "../utils/renderLinks";
 
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useUserIdFromToken } from "../utils/jwtUtils" ; 
+import { useUserIdFromToken } from "../utils/jwtUtils";
 
 import TextField from "@mui/material/TextField";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,9 +53,7 @@ export default function Home() {
   useEffect(() => {
     if (selectedHashtags.length > 0) {
       setFilteredNuggets(
-        nuggetList.filter((nugget) =>
-          selectedHashtags.includes(nugget.topic)
-        )
+        nuggetList.filter((nugget) => selectedHashtags.includes(nugget.topic))
       );
     } else {
       setFilteredNuggets(
@@ -77,7 +75,9 @@ export default function Home() {
       modifiedNugget({
         id: editedNugget._id,
         name: editedNugget.topic,
-        position: editedNugget.content,
+        position: editedNugget.content
+          .replace(/^\s+|\s+$/g, "")
+          .replace(/^(?:\r\n|\r|\n)+|(?:\r\n|\r|\n)+$/g, ""),
       })
     );
     dispatch(changeStateFalse());
@@ -102,13 +102,13 @@ export default function Home() {
 
   const handleHashtagClick = (name) => {
     if (selectedHashtags.includes(name)) {
-      setSelectedHashtags(selectedHashtags.filter(tag => tag !== name));
+      setSelectedHashtags(selectedHashtags.filter((tag) => tag !== name));
     } else {
       setSelectedHashtags([...selectedHashtags, name]);
     }
   };
 
-  const uniqueNames = [...new Set(nuggetList.map(nugget => nugget.topic))];
+  const uniqueNames = [...new Set(nuggetList.map((nugget) => nugget.topic))];
 
   const totalPages = Math.ceil(filteredNuggets.length / rowsPerPage);
 
@@ -153,13 +153,19 @@ export default function Home() {
     return pageNumbers;
   };
 
-  const filteredNuggetsByHashtags = selectedHashtags.length > 0
-    ? filteredNuggets.filter(nugget => selectedHashtags.includes(nugget.topic))
-    : currentRows;
+  const filteredNuggetsByHashtags =
+    selectedHashtags.length > 0
+      ? filteredNuggets.filter((nugget) =>
+          selectedHashtags.includes(nugget.topic)
+        )
+      : currentRows;
 
   return (
     <div className="content">
-      <p>Nuggs streamline your study review process! Easily search, filter, and customize your nuggs for efficient revision.</p>
+      <p>
+        Nuggs streamline your study review process! Easily search, filter, and
+        customize your nuggs for efficient revision.
+      </p>
       <div>
         <Box mt={2}>
           <div className="full-width">
@@ -168,31 +174,39 @@ export default function Home() {
               variant="outlined"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: "100%",marginBottom: "1" }}
+              style={{ width: "100%", marginBottom: "1" }}
             />
           </div>
-          <div className="full-width" >
-            <Box className="hash" style={{ overflowY: "auto", whiteSpace: "nowrap"}}>
+          <div className="full-width">
+            <Box
+              className="hash"
+              style={{ overflowY: "auto", whiteSpace: "nowrap" }}
+            >
               {uniqueNames.map((name) => (
                 <Button
                   key={name}
-                  variant={selectedHashtags.includes(name) ? "contained" : "outlined"}
+                  variant={
+                    selectedHashtags.includes(name) ? "contained" : "outlined"
+                  }
                   onClick={() => handleHashtagClick(name)}
-                  style={{ 
-                    margin: 1, 
-                    backgroundColor: selectedHashtags.includes(name) ? "black" : "transparent", 
+                  style={{
+                    margin: 1,
+                    backgroundColor: selectedHashtags.includes(name)
+                      ? "black"
+                      : "transparent",
                     height: "30px",
-                    fontSize: "0.9rem", 
+                    fontSize: "0.9rem",
                     color: selectedHashtags.includes(name) ? "white" : "#333", // Change font color to white when selected
-                    borderColor:"#999" 
-                  }}                >
+                    borderColor: "#999",
+                  }}
+                >
                   #{name}
                 </Button>
               ))}
             </Box>
           </div>
           <div className="full-width">
-            <Box  component={Paper}>
+            <Box component={Paper}>
               {loading ? (
                 <Box>Loading...</Box>
               ) : filteredNuggetsByHashtags.length === 0 ? (
@@ -201,7 +215,7 @@ export default function Home() {
                 <Box>{error}</Box>
               ) : (
                 filteredNuggetsByHashtags.map((item, index) => (
-                  <Box 
+                  <Box
                     key={index}
                     style={{
                       "&:last-child": { border: 0 },
@@ -210,10 +224,11 @@ export default function Home() {
                     {editedNugget && editedNugget._id === item._id ? (
                       <TextField
                         multiline
+                        rows={10}
                         style={{
                           width: "100%",
                         }}
-                        value= {editedNugget.content}
+                        value={editedNugget.content}
                         onChange={(e) =>
                           setEditedNugget({
                             ...editedNugget,
@@ -222,11 +237,28 @@ export default function Home() {
                         }
                       />
                     ) : (
-                      <div className="paper" >
+                      <div className="paper">
+                                        <div className="papercontent">
+
+                        
                         {renderTextWithLinks(item.content)}
-                        <br />
-                        #{item.topic}
-                        <Box   style={{ display: "flex", cursor: "pointer" }}>
+                        <div className="topicHome">
+                          <i class="fa fa-bookmark" aria-hidden="true"></i>
+
+                          <p>{item.topic}</p> 
+                          {item.fileName1 && item.fileName1.trim() !== "" && (
+                  <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a
+                      href={`resources/${item.fileName1}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Open attachment"
+                    >
+<i class="fa fa-external-link" aria-hidden="true"></i>
+                      </a>
+                  </div>
+                )}
+                          &nbsp;&nbsp;<Box style={{ display: "flex", cursor: "pointer" }}>
                           <Box
                             style={{ color: "#E0E0E0", marginRight: 1 }}
                             onClick={() => updateNugget(item)}
@@ -240,12 +272,16 @@ export default function Home() {
                             <DeleteIcon />
                           </Box>
                         </Box>
+                        </div>
+                        
+                        
+                        </div>
                       </div>
                     )}
                     {editedNugget && editedNugget._id === item._id && (
                       <Button
                         variant="contained"
-                        className="btn"
+                        class="btn"
                         color="primary"
                         size="small"
                         onClick={saveNugget}
@@ -253,11 +289,10 @@ export default function Home() {
                         Save
                       </Button>
                     )}
-                  </Box> 
+                  </Box>
                 ))
               )}
             </Box>
-            
           </div>
           <div className="full-width">
             <Box mt={2} style={{ display: "flex", justifyContent: "center" }}>
@@ -271,7 +306,7 @@ export default function Home() {
                     padding: "0 8px",
                     cursor: "pointer",
                     textDecoration: "underline",
-                    color: page === pageNumber ? "primary.main" : "inherit"
+                    color: page === pageNumber ? "primary.main" : "inherit",
                   }}
                 >
                   {pageNumber}
@@ -286,7 +321,11 @@ export default function Home() {
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
-              <Alert onClose={handleClose} severity="info" style={{ width: "100%" }}>
+              <Alert
+                onClose={handleClose}
+                severity="info"
+                style={{ width: "100%" }}
+              >
                 {response === "add"
                   ? "Nugget added successfully"
                   : response === "delete"

@@ -1,11 +1,10 @@
 * :not(.fa){
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif !important; /* Use !important to ensure this style takes precedence */
+  font-family: 'Roboto', sans-serif  /* Use !important to ensure this style takes precedence */
 }
 body {
   background-color:#F0F3F5;
-  font-family: 'Poppins', sans-serif;
 
 }
 
@@ -16,6 +15,7 @@ body {
     padding-top:5px;
 
   }
+  
 }
 
 @media only screen and (min-width: 1024px) {
@@ -42,9 +42,23 @@ body {
   cursor: pointer;
 }
 
+
 .refresh:hover {
   background-color: #666; /* Darken the background color on hover */
 }
+
+@media (max-width: 767px) {
+  .refresh {
+      display: block; /* Show the button on devices with a maximum width of 767px (typically mobile devices) */
+      position: fixed;
+      padding: 12px 16px;
+
+      bottom: 20px; /* Adjust this value for vertical positioning */
+      right: 20px; /* Adjust this value for horizontal positioning */
+      z-index: 999; /* Ensure the button appears on top of other content */
+  }
+}
+
 .header{
     padding: 10px;
 }

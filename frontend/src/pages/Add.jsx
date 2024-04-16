@@ -27,6 +27,8 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState([]); // Suggestions for Autocomplete
   const [value, setValue] = useState(null); // Autocomplete value
   const [fileurl, setFile] = useState(null); // Uploaded file
+  const [firstFocus, setFirstFocus] = useState(false);
+
   const userId = useUserIdFromToken();
 
 // Fetch nuggets a 
@@ -55,21 +57,25 @@ const fetchNuggets = async (userId) => {
 
   // Handle input change in the Autocomplete component
   const handleInputChange = (event, inputValue) => {
+    // Filter suggestions based on the input value
     const filteredSuggestions = suggestions.filter((name) =>
-      name.toLowerCase().includes(inputValue.toLowerCase())
+        name.toLowerCase().includes(inputValue.toLowerCase())
     );
+    // Update the suggestions state
     setSuggestions(filteredSuggestions);
 
-    if (!inputValue.trim()) {
-      fetchNuggets(userId);
-    }
+    // If the input value is empty or contains only whitespace characters
+    fetchNuggets(userId);
+
 
     try {
-      setTopic(inputValue); // Set the topic to the input value
+        // Set the topic to the input value
+        setTopic(inputValue);
     } catch (error) {
-      console.error('Error handling input change:', error);
+        console.error('Error handling input change:', error);
     }
-  };
+};
+
 
   // Handle click on the Add button
   // Setting values based on custom addition or pick from drop down
@@ -87,7 +93,7 @@ const fetchNuggets = async (userId) => {
       dispatch(
         addNugget({
           name: newval,
-          position: content,
+          position: content.replace(/^\s+|\s+$/g, '').replace(/^(?:\r\n|\r|\n)+|(?:\r\n|\r|\n)+$/g, ''),
           sessionUser: userId,
           fileName1: fileurl,
         })
@@ -104,6 +110,7 @@ const fetchNuggets = async (userId) => {
     setValue('');
   };
 
+  
   // Handle updating the form
   const updateForm = () => {
     dispatch(modifiedNugget({ id: id, name: topic, position: content }));
@@ -127,7 +134,6 @@ const fetchNuggets = async (userId) => {
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    console.log(file);
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
@@ -162,7 +168,13 @@ const fetchNuggets = async (userId) => {
   const handleClose = () => {
     setOpen(false);
   };
-
+  const handleFocus = () => {
+    if (!firstFocus) {
+        // Trigger handleInputChange only on the first focus
+        handleInputChange(value);
+        setFirstFocus(true);
+    }
+};
 
   
   return (
@@ -191,6 +203,9 @@ const fetchNuggets = async (userId) => {
             options={suggestions || []}
             getOptionLabel={getOptionLabel}
             onInputChange={handleInputChange}
+            onFocus={handleFocus}
+
+
             renderInput={(params) => (
               <TextField {...params} label="Topic" variant="outlined" />
             )}
@@ -207,8 +222,9 @@ const fetchNuggets = async (userId) => {
             variant="outlined"
             size="large"
             placeholder="Nugg"
-            rows={6} cols={10}
+            rows={10} cols={10}
             multiline
+            
             value={content}
             onChange={(e) => {
               setContent(e.target.value);

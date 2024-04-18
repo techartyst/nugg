@@ -6,10 +6,8 @@ import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { renderTextWithLinks } from "../utils/renderLinks";
-
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useUserIdFromToken } from "../utils/jwtUtils";
-
 import TextField from "@mui/material/TextField";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -156,8 +154,8 @@ export default function Home() {
   const filteredNuggetsByHashtags =
     selectedHashtags.length > 0
       ? filteredNuggets.filter((nugget) =>
-          selectedHashtags.includes(nugget.topic)
-        )
+        selectedHashtags.includes(nugget.topic)
+      )
       : currentRows;
 
   return (
@@ -224,7 +222,7 @@ export default function Home() {
                     {editedNugget && editedNugget._id === item._id ? (
                       <TextField
                         multiline
-                        rows={10}
+                        rows={15}
                         style={{
                           width: "100%",
                         }}
@@ -238,43 +236,44 @@ export default function Home() {
                       />
                     ) : (
                       <div className="paper">
-                                        <div className="papercontent">
-
-                        
-                        {renderTextWithLinks(item.content)}
-                        <div className="topicHome">
-                          <i class="fa fa-bookmark" aria-hidden="true"></i>
-
-                          <p>{item.topic}</p> 
-                          {item.fileName1 && item.fileName1.trim() !== "" && (
-                  <div>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<a
-                      href={`resources/${item.fileName1}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Open attachment"
-                    >
-<i class="fa fa-external-link" aria-hidden="true"></i>
-                      </a>
-                  </div>
-                )}
-                          &nbsp;&nbsp;<Box style={{ display: "flex", cursor: "pointer" }}>
-                          <Box
-                            style={{ color: "#E0E0E0", marginRight: 1 }}
-                            onClick={() => updateNugget(item)}
-                          >
-                            <EditIcon />
-                          </Box>
-                          <Box
-                            style={{ color: "#E0E0E0" }}
-                            onClick={() => deleteNuggetItem(item._id)}
-                          >
-                            <DeleteIcon />
-                          </Box>
-                        </Box>
-                        </div>
-                        
-                        
+                        <div className="papercontent">
+                          {renderTextWithLinks(item.content)}
+                          <div className="topicHome">
+                            <i class="fa fa-bookmark" aria-hidden="true"></i>
+                            <p>{item.topic}</p>
+                            {item.fileName1 && item.fileName1.trim() !== "" && (
+                              <div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a
+                                  href={`resources/${item.fileName1}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Open attachment"
+                                >
+                                  <i
+                                    class="fa fa-external-link"
+                                    aria-hidden="true"
+                                  ></i>
+                                </a>
+                              </div>
+                            )}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <Box style={{ display: "flex", cursor: "pointer" }}>
+                              <Box
+                                style={{ color: "#E0E0E0", marginRight: 1 }}
+                                onClick={() => updateNugget(item)}
+                              >
+                                <EditIcon />
+                              </Box>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <Box
+                                style={{ color: "#E0E0E0" }}
+                                onClick={() => deleteNuggetItem(item._id)}
+                              >
+                                <DeleteIcon />
+                              </Box>
+                            </Box>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -329,10 +328,10 @@ export default function Home() {
                 {response === "add"
                   ? "Nugget added successfully"
                   : response === "delete"
-                  ? "Nugget deleted successfully"
-                  : response === "update"
-                  ? "Nugget updated successfully"
-                  : null}
+                    ? "Nugget deleted successfully"
+                    : response === "update"
+                      ? "Nugget updated successfully"
+                      : null}
               </Alert>
             </Snackbar>
           </div>

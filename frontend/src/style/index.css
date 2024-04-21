@@ -306,3 +306,9 @@ a:hover{
   line-height: 180%;
 }
 
+.selectTopic {
+  width: 150px; /* Adjust the width as needed */
+  font-size: 0.8rem; /* Adjust the font size as needed */
+color:Red;
+background-color: red;
+}

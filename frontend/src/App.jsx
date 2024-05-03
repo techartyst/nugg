@@ -73,7 +73,7 @@ const App = () => {
 
       <footer class="footer">
         <center>
-          <p>nugg.app</p>
+          <p>nugg</p>
           <p className="light">Capture concise study cues effortlessly.</p>
           <p className="light"><a href="/">nugg.</a>  &copy;  all rights reserved.</p>
         </center>

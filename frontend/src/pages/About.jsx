@@ -35,7 +35,7 @@ const AboutPage = () => {
           <br></br>
 
           <p><strong>How much does nugg cost?</strong></p>
-          <p>nugg is free to use, providing accessible study cues anytime, anywhere, from any device. Any queries reach out Afzal Ibrahim or Sunny Kuttappan at afzal[@]theartist.me</p>
+          <p>nugg is free to use, providing accessible study cues anytime, anywhere, from any device. Any queries reach out at afzal[@]theartist.me</p>
         </Box>
      
       </div>

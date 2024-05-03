@@ -153,7 +153,7 @@ export default function Home() {
                     nuggetList[singleNuggetIndex].fileName1.trim() !== "" && (
                       <div>
                         <a
-                          href={`resources/${nuggetList[singleNuggetIndex].fileName1}`}
+                          href={`${nuggetList[singleNuggetIndex].fileName1}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -188,7 +188,7 @@ export default function Home() {
                       {nugget.fileName1 && nugget.fileName1.trim() !== "" && (
                         <div>
                           <a
-                            href={`resources/${nugget.fileName1}`}
+                            href={`${nugget.fileName1}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Open attachment"

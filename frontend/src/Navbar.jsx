@@ -24,7 +24,7 @@ const Navbar = () => {
         <div style={{ display: 'flex' }}>
           <div style={{ flex: 1 }}></div> {/* Left column (blank) */}
           <div className='logo' style={{ flex: 1, textAlign: 'center' }}> {/* Middle column */}
-          <h2 className='logo'>nugg.app</h2>
+          <h2 className='logo'>nugg</h2>
           </div>
           <div style={{ flex: 1, textAlign: 'right' }}> {/* Right column */}
             <div class="dropdown">

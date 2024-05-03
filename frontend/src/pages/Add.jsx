@@ -133,6 +133,8 @@ const fetchNuggets = async (userId) => {
   const [uploadMessage, setUploadMessage] = useState(null);
 
   const handleFileChange = async (e) => {
+    setUploadMessage(`Uploading, please wait..`);
+
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();

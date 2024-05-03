@@ -5,9 +5,30 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const fileUpload = require('express-fileupload');
 const path = require('path');
 const fs = require('fs');
+
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary with your credentials
+cloudinary.config({
+  cloud_name: "duqniw9mo",
+  api_key: process.env.CL_APIKEY,
+  api_secret: process.env.CL_SECRET,
+});
+
+// Set up Multer to use Cloudinary for storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+      folder: 'nugg', // Specify the folder name in Cloudinary
+      resource_type: 'auto'       // Automatically detect resource type
+  },
+});
+
+
 
 const dbHost = process.env.DB_HOST;
 
@@ -15,7 +36,6 @@ const dbHost = process.env.DB_HOST;
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(fileUpload());
 
 
 // Set the global variable for the token
@@ -121,18 +141,18 @@ app.get("/api/items/:userId", async (req, res) => { // Add a route parameter for
 
 app.post("/api/items", async (req, res) => {
 
- const user = await User.findById(req.body.sessionUser );
- user.password = "<masked>";
+  const user = await User.findById(req.body.sessionUser);
+  user.password = "<masked>";
 
   try {
     const newItem = new Item({
       topic: req.body.name,
       content: req.body.position,
       createdBy: req.body.sessionUser,
-      fileName1:req.body.fileName1,
-      fileName2:"",
+      fileName1: req.body.fileName1,
+      fileName2: "",
       createdUser: user
-      
+
     });
     await newItem
       .save()
@@ -194,24 +214,23 @@ app.post('/api/register', async (req, res) => {
 
   const userExists = await User.findOne({ username });
 
-  if(!userExists)
-{
-  
-  try {
+  if (!userExists) {
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword, fullname });
+    try {
 
-    await user.save();
-    return res.status(200).json({ message: 'Successfull' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Server error' });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({ username, password: hashedPassword, fullname });
+
+      await user.save();
+      return res.status(200).json({ message: 'Successfull' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Server error' });
+    }
+  } else {
+    return res.status(500).json({ message: 'User exists' });
+
   }
-}else{
-  return res.status(500).json({ message: 'User exists' });
 
-}
-  
 });
 
 app.post('/api/login', async (req, res) => {
@@ -243,46 +262,55 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Handle file upload
-app.post('/api/upload', (req, res) => {
-  
+// Define allowed file types
+const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
 
-
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
-
-  const file = req.files.file;
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-
-  if (!allowedTypes.includes(file.mimetype)) {
-    return res.status(400).send('Invalid file type.');
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    return res.status(400).send('File size exceeds the limit.');
-  }
-  
-  const fileName = `${Date.now()}-${file.name}`;
-
-const uploadPath = path.join(__dirname, '..', 'frontend', 'resources', fileName);
-
-file.mv(uploadPath, (err) => {
-  if (err) {
-    return res.status(500).send(err);
-  }
-
-  const renamedFileName = fileName.replace(/\s/g, '_'); // Replace spaces with underscore
-  const renamedFilePath = path.join(__dirname, '..', 'frontend', 'resources', renamedFileName);
-
-  fs.rename(uploadPath, renamedFilePath, (err) => {
-    if (err) {
-      return res.status(500).send(err);
+// File filter for checking file types
+const fileFilter = (req, file, cb) => {
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type.'), false);
     }
+};
 
-    const fileUrl = `/${renamedFileName}`;
-    res.json({ url: fileUrl });
-  });
+// Multer configuration using Cloudinary
+const parser = multer({
+  storage: new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'nugg',
+      resource_type: 'auto'
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
+  fileFilter: fileFilter
 });
 
+app.post('/api/upload', parser.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  
+
+  res.send({
+    message: 'File uploaded successfully',
+    fileDetails: req.file,
+    url: req.file.path // Assuming path is the URL where the file is stored in Cloudinary
+  });
+}, (error, req, res, next) => { // Error handling middleware for Multer
+  if (error instanceof multer.MulterError) {
+    // A Multer error occurred when uploading.
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).send('File size exceeds the 5MB limit.');
+    }
+    return res.status(500).send(error.message);
+  } else if (error) {
+    // An unknown error occurred when uploading.
+    if (error.message === 'Invalid file type. (Jpeg, Png, Gif, Pdf accepted!') {
+      return res.status(400).send('Invalid file type.');
+    }
+    return res.status(500).send('Unknown error during file upload.');
+  }
 });

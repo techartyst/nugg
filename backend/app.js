@@ -35,7 +35,19 @@ const dbHost = process.env.DB_HOST;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://nugg.netlify.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
+app.options("*", cors());
+
 
 
 // Set the global variable for the token
@@ -71,18 +83,9 @@ const ItemSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  fileName1: {
-    type: String,
-    required: false,
-  },
-  fileName2: {
-    type: String,
-    required: false,
-  },
-  fileName1: {
-    type: String,
-    required: false,
-  }
+  fileName1: { type: String },
+fileName2: { type: String }
+
   , createdBy: { type: String, required: false, }
   , createdUser: {
     type: mongoose.Schema.Types.Mixed,
@@ -194,6 +197,26 @@ app.put("/api/items/:id", async (req, res) => {
   }
 });
 
+app.post("/api/items/:id/archive", async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const deletedItem = await Item.findOneAndDelete({
+      _id: req.params.id,
+      createdBy: userId,
+    });
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found or unauthorized" });
+    }
+
+    res.status(200).json({ id: req.params.id });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 app.delete("/api/items/:id", async (req, res) => {
   try {
     await Item.findByIdAndRemove(req.params.id).then((response) => {
@@ -204,9 +227,11 @@ app.delete("/api/items/:id", async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
-  console.log(`Server is running on PORT ${8000}`);
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Server is running on PORT ${PORT}`);
 });
+
 
 app.post('/api/register', async (req, res) => {
   const { username, password, fullname } = req.body;
